@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudOps_Quiz</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: comic;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            padding-top: 20px;
+            overflow-y: auto;
+        }
+
+        .quiz-container {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+          
+            width: 90%;
+            max-width: 823px;
+            margin-top: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), 0 0 20px #00c8ff;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #76c7c0;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .question h3 {
+            margin-bottom: 10px;
+            color: #76c7c0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        #submitBtn {
+            background-color: #76c7c0;
+            color: #121212;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        #submitBtn:hover {
+            background-color: #64b3ae;
+        }
+
+        .timer {
+            position: sticky;
+            top: 0;
+            background-color: #1e1e1e;
+            color: #76c7c0;
+            font-size: 18px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), 0 0 10px #00c8ff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="quiz-container">
+        <h1>CloudOps LvL 3</h1>
+        <div class="timer" id="timer">Time Remaining: 1:30</div>
+        <form id="quizForm">
+            <div id="questions"></div>
+            <button type="submit" id="submitBtn">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        // Question Bank
+        const questionBank = [
+            { question: "Which of the following technologies is primarily used to ensure secure communication over the internet?", options: ["HTTP", "DNS", "SSL/TLS", "SMTP"], answer: "SSL/TLS" },
+            { question: "What does the acronym API stand for in software development?", options: ["Application Programming Interface", "Advanced Programming Integration", "Application Protocol Interface", "Automated Process Integration"], answer: "Application Programming Interface" },
+            { question: "What does the term 'Machine Learning' refer to?", options: ["Programming computers to perform tasks without explicit instructions", "Teaching machines how to operate hardware components", "Making models to answer questions", "None of the above"], answer: "Programming computers to perform tasks without explicit instructions" },
+            { question: "In cloud computing, what does the term 'Serverless' refer to?", options: ["Hosting services without using any physical servers", "Running code without managing server infrastructure", "Using virtual machines to replace physical servers", "A cloud service that does not require internet access"], answer: "Running code without managing server infrastructure" },
+            { question: "What is the primary purpose of a RESTful API?", options: ["To provide a graphical user interface for a web application", "To enable real-time communication between devices", "To allow different systems to exchange data in a standardized way", "To implement artificial intelligence in a software system"], answer: "To allow different systems to exchange data in a standardized way" },
+            { question: "Which of the following is a characteristic of a blockchain network?", options: ["Centralized authority controlling the network", "Decentralized, distributed ledger technology", "High-speed data transmission protocol", "Advanced encryption standard for secure communication"], answer: "Decentralized, distributed ledger technology" },
+            { question: "What is the main advantage of using a cloud-based infrastructure?", options: ["Hi-speed computing", "More secure than traditional systems", "On-demand access to computing resources and reduced costs", "Limited security and data protection features"], answer: "On-demand access to computing resources and reduced costs" },
+            { question: "Which of the following is a type of machine learning algorithm?", options: ["Charles’ algorithm", "Random forest", "A star", "Dijkstra's algorithm"], answer: "Random forest" },
+            { question: "In technology, what does the acronym URL stand for?", options: ["Uniform Resource Locator", "Universal Resource Locator", "Uniform Retrieval Link", "Universal Reference Link"], answer: "Uniform Resource Locator" },
+            { question: "Which technology is used to create and manage virtual environments for running applications?", options: ["Hypervisor", "Intel’s virtualization technology", "VMware Virtual technology", "Hyperversion"], answer: "Hypervisor" },
+            { question: "Which of the following is a type of database that stores data in a structured format using tables and rows?", options: ["Relational Database", "NoSQL Database", "Graph Database", "Time-Series Database"], answer: "Relational Database" },
+            { question: "What is the term for a type of malware that demands payment in exchange for restoring access to data?", options: ["Virus", "Worm", "Trojan", "Ransomware"], answer: "Ransomware" },
+            { question: "Which of the following is a type of computer storage that uses flash memory to store data?", options: ["Hard Disk Drive (HDD)", "Solid-State Drive (SSD)", "Random Access Memory (RAM)", "Read-Only Memory (ROM)"], answer: "Solid-State Drive (SSD)" },
+            { question: "Which of the following best describes 'cloud bursting'?", options: ["A cloud that explodes", "Shifting workloads to the public cloud during peak demand", "A sudden increase in internet speed", "Using multiple cloud providers simultaneously"], answer: "Shifting workloads to the public cloud during peak demand" },
+            { question: "What does the term 'edge computing' mean?", options: ["Computing done at the very edge of technology", "Processing data closer to where it is generated", "Cutting-edge technology for faster internet", "Computers designed for adventurous activities"], answer: "Processing data closer to where it is generated" },
+            { question: "What does 'containerization' mean in the context of cloud computing?", options: ["Developing software using cloud technology", "Packaging software into portable units for deployment", "Sending small packets/containers of data to servers", "Virtualization of data"], answer: "Packaging software into portable units for deployment" },
+            { question: "Which protocol is used to find the hardware address of a local device?", options: ["IP", "TCP", "ARP", "UDP"], answer: "ARP" },
+            { question: "Which of the following is a Layer 3 device?", options: ["Switch", "Hub", "Router", "Repeater"], answer: "Router" },
+            { question: "Which of the following is NOT a valid IPv4 address?", options: ["192.168.1.1", "255.255.255.255", "172.16.0.0", "256.10.10.10"], answer: "256.10.10.10" },
+            { question: "What does DNS stand for?", options: ["Dynamic Network System", "Domain Name System", "Digital Network Service", "Data Name Server"], answer: "Domain Name System" },
+            { question: "Which protocol is used to securely transmit data over the Internet?", options: ["HTTP", "FTP", "HTTPS", "Telnet"], answer: "HTTPS" },
+            { question: "What is the primary function of a firewall?", options: ["To accelerate network speed", "To block unauthorized access", "To encrypt data", "To manage bandwidth"], answer: "To block unauthorized access" },
+            { question: "Which port does HTTP use by default?", options: ["20", "21", "80", "443"], answer: "80" },
+            { question: "What type of network topology uses a single central cable to which all devices are connected?", options: ["Star", "Ring", "Mesh", "Bus"], answer: "Bus" },
+            { question: "Which of the following is a characteristic of TCP?", options: ["Connectionless", "Fast transmission", "Reliable delivery", "Low overhead"], answer: "Reliable delivery" },
+            { question: "In which network topology do all devices have a point-to-point connection to every other device?", options: ["Star", "Bus", "Ring", "Mesh"], answer: "Mesh" },
+            { question: "Which cloud deployment model is most suitable for organizations that want to keep their sensitive data in-house but still leverage cloud services?", options: ["Public Cloud", "Private Cloud", "Hybrid Cloud", "Community Cloud"], answer: "Hybrid Cloud" },
+            { question: "In cloud computing, what does 'scalability' refer to?", options: ["The ability to increase or decrease resources as needed", "The cost of cloud services", "The security of cloud data", "The speed of cloud services"], answer: "The ability to increase or decrease resources as needed" },
+            { question: "Which cloud computing model allows users to deploy and manage their own applications and data but uses the underlying infrastructure provided by the cloud provider?", options: ["IaaS", "SaaS", "PaaS", "NaaS"], answer: "IaaS" },
+            { question: "Which of the following cloud providers offers the Elastic Compute Cloud (EC2) service?", options: ["Microsoft Azure", "Google Cloud", "IBM Cloud", "AWS"], answer: "AWS" },
+            { question: "What is 'virtualization' in the context of cloud computing?", options: ["The process of creating a physical server", "The process of creating virtual versions of physical components", "A method for securing cloud data", "A programming language for cloud applications"], answer: "The process of creating virtual versions of physical components" },
+            { question: "Which cloud computing service model allows users to access software applications over the internet?", options: ["IaaS", "SaaS", "PaaS", "NaaS"], answer: "SaaS" }
+        ];
+        let selectedQuestions = [];
+
+// Function to shuffle and pick 10 random questions
+function getRandomQuestions() {
+    const shuffled = questionBank.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 10);
+}
+
+// Function to display questions
+function displayQuestions() {
+    const questionsContainer = document.getElementById('questions');
+    selectedQuestions = getRandomQuestions();
+
+    selectedQuestions.forEach((q, index) => {
+        const questionElement = document.createElement('div');
+        questionElement.className = 'question';
+
+        const questionTitle = document.createElement('h3');
+        questionTitle.textContent = `Q${index + 1}. ${q.question}`;
+        questionElement.appendChild(questionTitle);
+
+        q.options.forEach(option => {
+            const label = document.createElement('label');
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = `question${index}`;
+            input.value = option;
+            label.appendChild(input);
+            label.appendChild(document.createTextNode(option));
+            questionElement.appendChild(label);
+            questionElement.appendChild(document.createElement('br'));
+        });
+
+        questionsContainer.appendChild(questionElement);
+    });
+}
+
+// Function to calculate score
+function calculateScore() {
+    let score = 0;
+
+    selectedQuestions.forEach((q, index) => {
+        const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+        if (selectedOption && selectedOption.value === q.answer) {
+            score++;
+        }
+    });
+
+    return score;
+}
+
+// Function to update the timer
+function startTimer(duration, display) {
+    let timer = duration, minutes, seconds;
+    const intervalId = setInterval(function () {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = `Time Remaining: ${minutes}:${seconds}`;
+
+        if (--timer < 0) {
+            clearInterval(intervalId);
+            submitQuiz(); // Auto-submit when time is up
+        }
+    }, 1000);
+}
+
+// Function to submit the quiz
+function submitQuiz() {
+    const score = calculateScore();
+    alert(`Your score is ${score}/10`);
+    location.reload();
+}
+
+// On form submit
+document.getElementById('quizForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    submitQuiz();
+});
+
+// Display questions when the page loads
+window.onload = function () {
+    displayQuestions();
+    const threeMinutes = 90,
+        display = document.getElementById('timer');
+    startTimer(threeMinutes, display);
+};
+</script>
+</body>
+
+</html>
